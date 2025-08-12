@@ -4,15 +4,15 @@ A modern, full-stack authentication service with email verification built using 
 
 ## ✨ Features
 
-- 🔐 **Secure Authentication** - JWT token-based authentication with bcrypt password hashing
-- 📧 **Email Verification** - Required email verification before account activation
-- 🎨 **Modern Frontend** - Beautiful, responsive web interface with real-time feedback
-- 🛡️ **Security Best Practices** - Protected routes, token expiration, and secure password storage
-- 🗄️ **PostgreSQL Integration** - Robust database with SQLAlchemy ORM
-- 🐳 **Docker Ready** - Complete containerization for easy deployment
-- 📚 **Auto-Generated Docs** - Interactive API documentation with Swagger UI
-- ✅ **Comprehensive Testing** - Full test suite with pytest
-- 🚀 **Production Ready** - Error handling, logging, and fallback mechanisms
+- **Secure Authentication** - JWT token-based authentication with bcrypt password hashing
+- **Email Verification** - Required email verification before account activation
+- **Modern Frontend** - Beautiful, responsive web interface with real-time feedback
+- **Security Best Practices** - Protected routes, token expiration, and secure password storage
+- **PostgreSQL Integration** - Robust database with SQLAlchemy ORM
+- **Docker Ready** - Complete containerization for easy deployment
+- **Auto-Generated Docs** - Interactive API documentation with Swagger UI
+- **Comprehensive Testing** - Full test suite with pytest
+- **Production Ready** - Error handling, logging, and fallback mechanisms
 
 ## 🚀 Quick Start
 
