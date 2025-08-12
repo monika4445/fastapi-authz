@@ -150,6 +150,20 @@ docker-compose up web
 - Check verification status
 - See registration date
 - Logout securely
+  
+<img width="1512" height="759" alt="Screenshot 2025-08-12 at 12 18 04" src="https://github.com/user-attachments/assets/3ebaf5b5-25a3-4aec-b069-4adfa284b9a1" />
+
+<img width="1512" height="758" alt="Screenshot 2025-08-12 at 12 18 23" src="https://github.com/user-attachments/assets/606f27fc-e5ac-4f52-b5fd-942d514db776" />
+
+<img width="1157" height="652" alt="Screenshot 2025-08-12 at 12 20 59" src="https://github.com/user-attachments/assets/2f12057d-5890-4015-84da-32f32a9e4add" />
+
+<img width="1496" height="532" alt="Screenshot 2025-08-12 at 12 21 20" src="https://github.com/user-attachments/assets/077a41fc-45f0-42d7-bdfc-25f9a81cde8a" />
+
+<img width="1140" height="644" alt="Screenshot 2025-08-12 at 12 22 49" src="https://github.com/user-attachments/assets/ccd43d79-d83a-4519-ac2d-a5a3f302f6c5" />
+
+<img width="1512" height="762" alt="Screenshot 2025-08-12 at 12 23 17" src="https://github.com/user-attachments/assets/de98d324-9654-467c-b88e-ee6ba30704ba" />
+
+<img width="1512" height="760" alt="Screenshot 2025-08-12 at 12 23 40" src="https://github.com/user-attachments/assets/410e687c-1991-4f76-9cac-36329b348388" />
 
 ## 🔗 API Endpoints
 
