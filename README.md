@@ -1,181 +1,357 @@
-# FastAPI Authorization Service
+# 🔐 FastAPI Authentication Service
 
-A robust authorization service built with FastAPI, PostgreSQL, and JWT authentication.
+A modern, full-stack authentication service with email verification built using FastAPI, PostgreSQL, and JWT tokens. Features a beautiful responsive frontend and production-ready backend.
 
-## Features
+## ✨ Features
 
-- User registration and login
-- JWT token-based authentication
-- Password hashing with bcrypt
-- PostgreSQL database integration
-- Docker containerization
-- Comprehensive API documentation
-- Unit tests
+- 🔐 **Secure Authentication** - JWT token-based authentication with bcrypt password hashing
+- 📧 **Email Verification** - Required email verification before account activation
+- 🎨 **Modern Frontend** - Beautiful, responsive web interface with real-time feedback
+- 🛡️ **Security Best Practices** - Protected routes, token expiration, and secure password storage
+- 🗄️ **PostgreSQL Integration** - Robust database with SQLAlchemy ORM
+- 🐳 **Docker Ready** - Complete containerization for easy deployment
+- 📚 **Auto-Generated Docs** - Interactive API documentation with Swagger UI
+- ✅ **Comprehensive Testing** - Full test suite with pytest
+- 🚀 **Production Ready** - Error handling, logging, and fallback mechanisms
 
-## Quick Start
+## 🚀 Quick Start
 
-### Using Docker (Recommended)
+### Prerequisites
 
-1. Clone the repository:
+- **Python 3.12+**
+- **PostgreSQL 14+**
+- **Git**
+
+### 1. Clone Repository
+
 ```bash
 git clone https://github.com/monika4445/fastapi-authz.git
 cd fastapi-authz
 ```
 
-2. Start the services:
-```bash
-docker-compose up --build
+### 2. Environment Setup
+
+Create a `.env` file in the project root:
+
+```env
+# Database Configuration
+DATABASE_URL=postgresql+psycopg://postgres@localhost:5432/auth_db
+
+# JWT Configuration
+SECRET_KEY=your-super-secret-jwt-key-change-this-in-production
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=30
+
+# Email Configuration (Gmail)
+EMAIL_USER=your-email@gmail.com
+EMAIL_PASSWORD=your-gmail-app-password
+FRONTEND_URL=http://localhost:3000
 ```
 
-3. The API will be available at `http://localhost:8000`
-4. API documentation at `http://localhost:8000/docs`
+### 3. Database Setup
 
-### Local Development
-
-1. Install dependencies:
 ```bash
+# Create PostgreSQL database
+psql -U postgres -c "CREATE DATABASE auth_db;"
+
+# Or using Docker
+docker run --name postgres-auth -e POSTGRES_PASSWORD=password -e POSTGRES_DB=auth_db -p 5432:5432 -d postgres:15
+```
+
+### 4. Install Dependencies
+
+```bash
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install packages
 pip install -r requirements.txt
 ```
 
-2. Set up PostgreSQL and create a `.env` file based on `.env.example`
+### 5. Run the Application
 
-3. Run the application:
+**Terminal 1 - Backend (Port 8000):**
 ```bash
 uvicorn app.main:app --reload
 ```
 
-## API Endpoints
-
-- `POST /auth/register` - Register a new user
-- `POST /auth/login` - Login and get access token
-- `GET /auth/me` - Get current user info (protected)
-- `POST /auth/logout` - Logout user
-- `GET /docs` - Swagger API documentation
-
-## Testing
-
-Run tests with:
+**Terminal 2 - Frontend (Port 3000):**
 ```bash
-pytest
+cd frontend
+python start_frontend.py
 ```
 
-## Environment Variables
+### 6. Access the Application
 
-Create a `.env` file with:
-```env
-DATABASE_URL=postgresql://user:password@localhost:5432/dbname
-SECRET_KEY=your-secret-key
-ALGORITHM=HS256
-ACCESS_TOKEN_EXPIRE_MINUTES=30
-```
+- **Frontend UI:** http://localhost:3000
+- **Backend API:** http://localhost:8000
+- **API Documentation:** http://localhost:8000/docs
+- **Health Check:** http://localhost:8000/health
 
-## Commands to Run
+## 🐳 Docker Deployment (Alternative)
 
-### Development
+### Quick Docker Start
+
 ```bash
-# Clone your repo
-git clone https://github.com/monika4445/fastapi-authz.git
-cd fastapi-authz
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Run with Docker
+# Start both database and application
 docker-compose up --build
 
-# Or run locally (need PostgreSQL running)
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-
-# Run tests
-pytest
-
-# Access API
-# - API: http://localhost:8000
-# - Docs: http://localhost:8000/docs
-# - Health: http://localhost:8000/health
-```
-
-### Production
-```bash
-# Build and run with Docker
+# Run in background
 docker-compose up -d --build
-
-# Or with specific environment
-docker-compose -f docker-compose.prod.yml up -d
 ```
 
-## Project Structure
-```
-fastapi-authz/
-├── app/
-│   ├── __init__.py
-│   ├── main.py
-│   ├── config.py
-│   ├── database.py
-│   ├── models.py
-│   ├── schemas.py
-│   ├── auth.py
-│   ├── dependencies.py
-│   └── routers/
-│       ├── __init__.py
-│       └── auth.py
-├── tests/
-│   ├── __init__.py
-│   ├── test_auth.py
-│   └── conftest.py
-├── .env.example
-├── .gitignore
-├── Dockerfile
-├── docker-compose.yml
-├── requirements.txt
-└── README.md
+### Individual Services
+
+```bash
+# Database only
+docker-compose up -d db
+
+# Application only (requires database)
+docker-compose up web
 ```
 
-## Example Usage
+## 📱 How to Use
 
-### Register a new user
+### 1. User Registration
+
+1. Open http://localhost:3000
+2. Click **"Register"** tab
+3. Fill in:
+   - Email address
+   - Username
+   - Password
+4. Click **"Register"**
+5. Check console output for verification link (demo mode) or your email inbox
+
+### 2. Email Verification
+
+**Demo Mode (Console):**
+- Copy verification link from terminal output
+- Paste in browser address bar
+- Account verified instantly
+
+**Production Mode (Real Email):**
+- Check your email inbox
+- Click verification button in email
+- Redirected to application with verified account
+
+### 3. Login & Access
+
+1. Click **"Login"** tab
+2. Enter username and password
+3. Click **"Login"**
+4. Access granted - redirected to profile
+5. View your secure profile information
+
+### 4. Profile Management
+
+- View account details
+- Check verification status
+- See registration date
+- Logout securely
+
+## 🔗 API Endpoints
+
+### Authentication Routes
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| `POST` | `/auth/register` | Register new user | ❌ |
+| `POST` | `/auth/verify-email` | Verify email address | ❌ |
+| `POST` | `/auth/login` | Login user | ❌ |
+| `GET` | `/auth/me` | Get user profile | ✅ |
+| `POST` | `/auth/resend-verification` | Resend verification email | ❌ |
+| `POST` | `/auth/logout` | Logout user | ✅ |
+
+### System Routes
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/` | Root endpoint |
+| `GET` | `/health` | Health check |
+| `GET` | `/docs` | API documentation |
+
+### Example API Usage
+
+**Register User:**
 ```bash
 curl -X POST "http://localhost:8000/auth/register" \
      -H "Content-Type: application/json" \
      -d '{
        "email": "user@example.com",
-       "username": "testuser",
-       "password": "securepassword123"
+       "username": "newuser",
+       "password": "securepass123"
      }'
 ```
 
-### Login
+**Login:**
 ```bash
 curl -X POST "http://localhost:8000/auth/login" \
      -H "Content-Type: application/json" \
      -d '{
-       "username": "testuser",
-       "password": "securepassword123"
+       "username": "newuser",
+       "password": "securepass123"
      }'
 ```
 
-### Access protected route
+**Access Protected Route:**
 ```bash
 curl -X GET "http://localhost:8000/auth/me" \
-     -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+     -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
-## Development Notes
+## 📧 Email Configuration
 
-- Python 3.12 required
-- PostgreSQL database
-- JWT tokens expire in 30 minutes by default
-- Passwords are hashed using bcrypt
-- CORS enabled for development (configure for production)
+### Gmail Setup (Recommended)
 
-## Contributing
+1. **Enable 2-Factor Authentication** on your Gmail account
+2. **Generate App Password:**
+   - Visit: https://myaccount.google.com/apppasswords
+   - App: Mail
+   - Device: Other (FastAPI Auth)
+   - Copy 16-character password
+3. **Update .env file:**
+   ```env
+   EMAIL_USER=your-email@gmail.com
+   EMAIL_PASSWORD=abcd efgh ijkl mnop  # Keep spaces as shown
+   ```
+
+## 🧪 Testing
+
+### Run Test Suite
+
+```bash
+# All tests
+pytest
+
+# With coverage
+pytest --cov=app
+
+# Specific test file
+pytest tests/test_auth.py
+
+# Verbose output
+pytest -v
+```
+
+### Manual Testing
+
+```bash
+# Test database connection
+python -c "from app.database import engine; print('✅ Database connected!')"
+
+# Test Gmail credentials (if configured)
+python test_gmail_fixed.py
+
+# Test API health
+curl http://localhost:8000/health
+```
+
+## 🔧 Configuration
+
+### Environment Variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `DATABASE_URL` | `postgresql+psycopg://postgres@localhost:5432/auth_db` | PostgreSQL connection string |
+| `SECRET_KEY` | `your-secret-key` | JWT signing secret |
+| `ALGORITHM` | `HS256` | JWT algorithm |
+| `ACCESS_TOKEN_EXPIRE_MINUTES` | `30` | Token expiration time |
+| `EMAIL_USER` | `""` | Gmail username |
+| `EMAIL_PASSWORD` | `""` | Gmail app password |
+| `FRONTEND_URL` | `http://localhost:3000` | Frontend URL for email links |
+
+### Database Migration
+
+```bash
+# Create new migration
+alembic revision --autogenerate -m "description"
+
+# Apply migrations
+alembic upgrade head
+
+# Manual database setup
+python migrate_db.py
+```
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+**Database Connection Failed:**
+```bash
+# Check PostgreSQL status
+pg_ctl status
+
+# Restart PostgreSQL
+brew services restart postgresql  # macOS
+sudo systemctl restart postgresql  # Linux
+```
+
+**Email Not Sending:**
+- Check Gmail 2FA is enabled
+- Verify app password format (19 characters with spaces)
+- Application falls back to console mode automatically
+
+**Frontend Not Loading:**
+```bash
+# Check if port 3000 is available
+lsof -i :3000
+
+# Start frontend server manually
+cd frontend && python start_frontend.py
+```
+
+**JWT Token Errors:**
+- Check SECRET_KEY is set in .env
+- Verify token hasn't expired (30 min default)
+- Ensure Bearer prefix in Authorization header
+
+## 🚀 Production Deployment
+
+### Environment Setup
+
+```env
+# Production .env
+DATABASE_URL=postgresql://user:pass@production-db:5432/auth_db
+SECRET_KEY=super-long-random-production-secret-key
+EMAIL_USER=noreply@yourdomain.com
+EMAIL_PASSWORD=production-app-password
+FRONTEND_URL=https://yourdomain.com
+```
+
+### Docker Production
+
+```bash
+# Build production image
+docker build -t fastapi-auth .
+
+# Run with production config
+docker-compose -f docker-compose.prod.yml up -d
+```
+
+### Security Checklist
+
+- [ ] Change default SECRET_KEY
+- [ ] Use environment-specific database
+- [ ] Enable HTTPS
+- [ ] Configure CORS for production domains
+- [ ] Set up email monitoring
+- [ ] Enable database backups
+- [ ] Configure log rotation
+
+## 🤝 Contributing
 
 1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
+2. Create feature branch: `git checkout -b feature/amazing-feature`
+3. Commit changes: `git commit -m 'Add amazing feature'`
+4. Push to branch: `git push origin feature/amazing-feature`
+5. Open Pull Request
 
-## License
+## 📄 License
 
 This project is licensed under the MIT License.
+---
+
+**Built with ❤️ using FastAPI, PostgreSQL, and modern web technologies**
