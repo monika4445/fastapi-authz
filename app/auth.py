@@ -1,3 +1,4 @@
+# app/auth.py
 from datetime import datetime, timedelta
 from typing import Optional
 from jose import JWTError, jwt
@@ -6,6 +7,8 @@ from sqlalchemy.orm import Session
 from .config import settings
 from .models import User
 from .schemas import TokenData
+import secrets
+import string
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -15,12 +18,20 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
 
+def generate_verification_token() -> str:
+    """Generate a secure random verification token"""
+    alphabet = string.ascii_letters + string.digits
+    return ''.join(secrets.choice(alphabet) for _ in range(32))
+
 def authenticate_user(db: Session, username: str, password: str) -> Optional[User]:
     user = db.query(User).filter(User.username == username).first()
     if not user:
         return None
     if not verify_password(password, user.hashed_password):
         return None
+    # Check if user is verified
+    if not user.is_verified:
+        return None  # User exists but email not verified
     return user
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
@@ -43,3 +54,18 @@ def verify_token(token: str) -> Optional[TokenData]:
         return token_data
     except JWTError:
         return None
+
+def verify_email_token(db: Session, token: str) -> Optional[User]:
+    """Verify email verification token and return user"""
+    user = db.query(User).filter(User.verification_token == token).first()
+    if not user:
+        return None
+    
+    # Mark user as verified
+    user.is_verified = True
+    user.verification_token = None  # Clear the token
+    user.verified_at = datetime.utcnow()
+    db.commit()
+    db.refresh(user)
+    
+    return user

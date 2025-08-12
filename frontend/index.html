@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FastAPI Auth Service</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 40px;
+            width: 100%;
+            max-width: 450px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e1e1e1;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-1px);
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+            transform: translateY(-1px);
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+            transform: translateY(-1px);
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .btn-warning:hover {
+            background: #e0a800;
+            transform: translateY(-1px);
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .tab-buttons {
+            display: flex;
+            margin-bottom: 30px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 4px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: transparent;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active {
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            color: #667eea;
+        }
+
+        .form-section {
+            display: none;
+        }
+
+        .form-section.active {
+            display: block;
+        }
+
+        .user-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .user-info h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .user-info p {
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .api-status {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .status-online {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-offline {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .verification-notice {
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            margin-bottom: 20px;
+        }
+
+        .verification-notice h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .verification-notice p {
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .resend-section {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Auth Service</h1>
+        
+        <div id="apiStatus" class="api-status">
+            Checking API status...
+        </div>
+
+        <div id="alertContainer"></div>
+
+        <!-- Verification Notice (hidden by default) -->
+        <div id="verificationNotice" class="verification-notice" style="display: none;">
+            <h3>📧 Email Verification Required</h3>
+            <p id="verificationMessage">Check your email and click the verification link to activate your account.</p>
+            <div class="resend-section">
+                <p style="margin-bottom: 10px; font-size: 14px;">Didn't receive the email?</p>
+                <input type="email" id="resendEmail" placeholder="Enter your email" style="margin-bottom: 10px;">
+                <button class="btn btn-warning" onclick="resendVerification()">📨 Resend Verification Email</button>
+            </div>
+        </div>
+
+        <div class="tab-buttons">
+            <button class="tab-btn active" onclick="showTab('login', this)">Login</button>
+            <button class="tab-btn" onclick="showTab('register', this)">Register</button>
+            <button class="tab-btn" onclick="showTab('profile', this)">Profile</button>
+        </div>
+
+        <!-- Login Form -->
+        <div id="loginSection" class="form-section active">
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginUsername">Username:</label>
+                    <input type="text" id="loginUsername" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password:</label>
+                    <input type="password" id="loginPassword" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Login</button>
+            </form>
+        </div>
+
+        <!-- Register Form -->
+        <div id="registerSection" class="form-section">
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="registerEmail">Email:</label>
+                    <input type="email" id="registerEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerUsername">Username:</label>
+                    <input type="text" id="registerUsername" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword">Password:</label>
+                    <input type="password" id="registerPassword" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Register</button>
+            </form>
+        </div>
+
+        <!-- Profile Section -->
+        <div id="profileSection" class="form-section">
+            <div id="userInfo" class="user-info" style="display: none;">
+                <h3>Welcome back! 👋</h3>
+                <p><strong>ID:</strong> <span id="userId"></span></p>
+                <p><strong>Username:</strong> <span id="userUsername"></span></p>
+                <p><strong>Email:</strong> <span id="userEmail"></span></p>
+                <p><strong>Status:</strong> <span id="userStatus"></span></p>
+                <p><strong>Verified:</strong> <span id="userVerified"></span></p>
+                <p><strong>Created:</strong> <span id="userCreated"></span></p>
+                <p><strong>Verified At:</strong> <span id="userVerifiedAt"></span></p>
+            </div>
+            <div id="notLoggedIn">
+                <p style="text-align: center; color: #666; margin-bottom: 20px;">
+                    Please login to view your profile
+                </p>
+            </div>
+            <button id="logoutBtn" class="btn btn-danger" onclick="logout()" style="display: none;">Logout</button>
+            <button id="refreshProfileBtn" class="btn btn-success" onclick="getUserProfile()" style="display: none;">Refresh Profile</button>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8000';
+        let authToken = localStorage.getItem('authToken');
+
+        // Check for verification token in URL
+        window.addEventListener('load', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const verificationToken = urlParams.get('token');
+            
+            if (verificationToken) {
+                verifyEmailToken(verificationToken);
+            }
+        });
+
+        // Check API status on page load
+        checkApiStatus();
+
+        // Update UI based on auth state
+        updateAuthState();
+
+        async function checkApiStatus() {
+            try {
+                const response = await fetch(`${API_BASE}/health`);
+                if (response.ok) {
+                    showApiStatus('API Online ✅', 'status-online');
+                } else {
+                    showApiStatus('API Error ❌', 'status-offline');
+                }
+            } catch (error) {
+                showApiStatus('API Offline ❌ (Make sure your FastAPI server is running)', 'status-offline');
+            }
+        }
+
+        function showApiStatus(message, className) {
+            const statusEl = document.getElementById('apiStatus');
+            statusEl.textContent = message;
+            statusEl.className = `api-status ${className}`;
+        }
+
+        function showTab(tab, clickedElement = null) {
+            // Hide verification notice when switching tabs
+            document.getElementById('verificationNotice').style.display = 'none';
+            
+            // Hide all sections
+            document.querySelectorAll('.form-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Remove active class from all tab buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(`${tab}Section`).classList.add('active');
+            
+            // Add active class to clicked button
+            if (clickedElement) {
+                clickedElement.classList.add('active');
+            } else {
+                const tabButtons = document.querySelectorAll('.tab-btn');
+                const tabNames = ['login', 'register', 'profile'];
+                const tabIndex = tabNames.indexOf(tab);
+                if (tabIndex >= 0 && tabButtons[tabIndex]) {
+                    tabButtons[tabIndex].classList.add('active');
+                }
+            }
+
+            // Update profile if on profile tab
+            if (tab === 'profile') {
+                updateAuthState();
+            }
+        }
+
+        function showAlert(message, type) {
+            const alertContainer = document.getElementById('alertContainer');
+            const alertClass = type === 'success' ? 'alert-success' : 
+                              type === 'warning' ? 'alert-warning' :
+                              type === 'info' ? 'alert-info' : 'alert-error';
+            
+            alertContainer.innerHTML = `
+                <div class="alert ${alertClass}">
+                    ${message}
+                </div>
+            `;
+            
+            // Remove alert after 7 seconds
+            setTimeout(() => {
+                alertContainer.innerHTML = '';
+            }, 7000);
+        }
+
+        function showVerificationNotice(email, username) {
+            const notice = document.getElementById('verificationNotice');
+            const message = document.getElementById('verificationMessage');
+            const resendEmail = document.getElementById('resendEmail');
+            
+            message.textContent = `We've sent a verification email to ${email}. Click the link in the email to activate your account.`;
+            resendEmail.value = email;
+            notice.style.display = 'block';
+        }
+
+        async function verifyEmailToken(token) {
+            try {
+                const response = await fetch(`${API_BASE}/auth/verify-email`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ token: token })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showAlert(`🎉 Email verified successfully! Welcome, ${data.username}! You can now log in.`, 'success');
+                    showTab('login');
+                    
+                    // Pre-fill username in login form
+                    document.getElementById('loginUsername').value = data.username;
+                } else {
+                    showAlert(`❌ Verification failed: ${data.detail}`, 'error');
+                }
+            } catch (error) {
+                showAlert(`❌ Verification error: ${error.message}`, 'error');
+            }
+        }
+
+        async function resendVerification() {
+            const email = document.getElementById('resendEmail').value;
+            if (!email) {
+                showAlert('Please enter your email address', 'warning');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/auth/resend-verification?email=${encodeURIComponent(email)}`, {
+                    method: 'POST'
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showAlert('📧 Verification email sent! Check your inbox.', 'success');
+                } else {
+                    showAlert(`❌ ${data.detail}`, 'error');
+                }
+            } catch (error) {
+                showAlert(`❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        // Login Form Handler
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            try {
+                const response = await fetch(`${API_BASE}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    authToken = data.access_token;
+                    localStorage.setItem('authToken', authToken);
+                    showAlert('Login successful! 🎉', 'success');
+                    updateAuthState();
+                    showTab('profile');
+                    
+                    // Clear form
+                    document.getElementById('loginForm').reset();
+                } else {
+                    if (response.status === 403) {
+                        // Email not verified
+                        showAlert('📧 Please verify your email before logging in. Check your inbox for the verification link.', 'warning');
+                        showVerificationNotice('your-email@example.com', username); // You can store email from registration
+                    } else {
+                        showAlert(`❌ Login failed: ${data.detail}`, 'error');
+                    }
+                }
+            } catch (error) {
+                showAlert(`❌ Error: ${error.message}`, 'error');
+            }
+        });
+
+        // Register Form Handler
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('registerEmail').value;
+            const username = document.getElementById('registerUsername').value;
+            const password = document.getElementById('registerPassword').value;
+            
+            try {
+                const response = await fetch(`${API_BASE}/auth/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, username, password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showAlert('✅ Registration successful! Check your email to verify your account.', 'success');
+                    showVerificationNotice(email, username);
+                    
+                    // Clear form
+                    document.getElementById('registerForm').reset();
+                    
+                    // Stay on register tab to show verification notice
+                } else {
+                    showAlert(`❌ Registration failed: ${data.detail}`, 'error');
+                }
+            } catch (error) {
+                showAlert(`❌ Error: ${error.message}`, 'error');
+            }
+        });
+
+        async function getUserProfile() {
+            if (!authToken) {
+                updateAuthState();
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/auth/me`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const userData = await response.json();
+                    displayUserInfo(userData);
+                } else {
+                    if (response.status === 401) {
+                        logout();
+                        showAlert('Session expired. Please login again.', 'error');
+                    } else {
+                        showAlert('Failed to fetch user profile', 'error');
+                    }
+                }
+            } catch (error) {
+                showAlert(`❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        function displayUserInfo(userData) {
+            document.getElementById('userId').textContent = userData.id;
+            document.getElementById('userUsername').textContent = userData.username;
+            document.getElementById('userEmail').textContent = userData.email;
+            document.getElementById('userStatus').textContent = userData.is_active ? 'Active ✅' : 'Inactive ❌';
+            document.getElementById('userVerified').textContent = userData.is_verified ? 'Verified ✅' : 'Not Verified ❌';
+            document.getElementById('userCreated').textContent = new Date(userData.created_at).toLocaleDateString();
+            document.getElementById('userVerifiedAt').textContent = userData.verified_at ? 
+                new Date(userData.verified_at).toLocaleDateString() : 'Not verified';
+            
+            document.getElementById('userInfo').style.display = 'block';
+            document.getElementById('notLoggedIn').style.display = 'none';
+            document.getElementById('logoutBtn').style.display = 'block';
+            document.getElementById('refreshProfileBtn').style.display = 'block';
+        }
+
+        function updateAuthState() {
+            if (authToken) {
+                getUserProfile();
+            } else {
+                document.getElementById('userInfo').style.display = 'none';
+                document.getElementById('notLoggedIn').style.display = 'block';
+                document.getElementById('logoutBtn').style.display = 'none';
+                document.getElementById('refreshProfileBtn').style.display = 'none';
+            }
+        }
+
+        function logout() {
+            authToken = null;
+            localStorage.removeItem('authToken');
+            updateAuthState();
+            showAlert('Logged out successfully', 'success');
+            showTab('login');
+        }
+
+        // Auto-refresh API status every 30 seconds
+        setInterval(checkApiStatus, 30000);
+    </script>
+</body>
+</html>

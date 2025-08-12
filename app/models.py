@@ -1,3 +1,4 @@
+# app/models.py
 from sqlalchemy import Boolean, Column, Integer, String, DateTime
 from sqlalchemy.sql import func
 from .database import Base
@@ -10,5 +11,8 @@ class User(Base):
     username = Column(String, unique=True, index=True, nullable=False)
     hashed_password = Column(String, nullable=False)
     is_active = Column(Boolean, default=True)
+    is_verified = Column(Boolean, default=False)  # Email verification status
+    verification_token = Column(String, nullable=True)  # Verification token
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    verified_at = Column(DateTime(timezone=True), nullable=True)  # When email was verified
